@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 dip_df = pd.read_csv("dip-har-eff.csv")
 drift_df = pd.read_csv("drift-har-eff.csv")
