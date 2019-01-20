@@ -13,4 +13,4 @@
 
 ## Components for recipe
 - Cost function to calculate cost
-- Gradient descene function to calculate new Theta vector
+- Gradient descent function to calculate new Theta vector
