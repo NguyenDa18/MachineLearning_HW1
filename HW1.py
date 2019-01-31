@@ -8,7 +8,7 @@ import argparse
 ap = argparse.ArgumentParser()
 
 # Load dataframes
-dip_df = pd.read_csv("drift-har-eff.csv")
+dip_df = pd.read_csv("albacore_metal.csv")
 
 # Gather info
 dip_rows = dip_df.shape[0]
@@ -35,7 +35,6 @@ def calc_b0_Error(row, col):
 def calc_b1_Error(row, col):
     return (b1*row+b0 - col) * row
 
-
 # helper wrapper function for us to plug in error function to use
 def useErrorFunction(errorFunction, args):
     return errorFunction(*args)
@@ -44,9 +43,9 @@ def mse(X,Y, errorFunction):
     errorsList = []
     for (row, col) in zip(X,Y):
         val = useErrorFunction(errorFunction, (row, col))
-        errorsList.append(val)  
-    ERROR_SUM = sum(errorsList)
-    return ERROR_SUM / batchSize
+        errorsList.append(val)
+    ERROR_MSE = calcMean(errorsList)  
+    return ERROR_MSE
 
 def adjustWeight(weight, learn, temp_error):
     return weight - learn * temp_error
@@ -82,7 +81,7 @@ def calcRSquared(actual, predicted):
 b1 = 1.0
 b0 = -0.5
 batchSize = 10
-epochs = 100
+epochs = 500
 
 learn = 0.4
 
