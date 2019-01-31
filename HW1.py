@@ -7,11 +7,10 @@ import argparse
 # construct argument parse
 ap = argparse.ArgumentParser()
 
-# Load dataframes
 dataset_name = 'dip-har-eff.csv'
 name = dataset_name.split('.csv')[0]
 
-dataset_df = pd.read_csv("albacore_metal.csv")
+dataset_df = pd.read_csv(dataset_name)
 
 # Gather info
 dataset_rows = dataset_df.shape[0]
@@ -19,8 +18,8 @@ dataset_rows = dataset_df.shape[0]
 dataset_df = dataset_df.values
 dataset_df = dataset_df[np.arange(0, dataset_rows), :]
 
-dataset_X = dataset_df[:,2]
-dataset_Y = dataset_df[:,3]
+dataset_X = dataset_df[:,1]
+dataset_Y = dataset_df[:,2]
 dataset_X_max = np.max(dataset_X)
 dataset_Y_max = np.max(dataset_Y)
 
@@ -55,26 +54,32 @@ def adjustWeight(weight, learn, temp_error):
 def takeRandomBatch(listLen, batchSize):
     return random.sample(range(listLen), batchSize)
 
+# Related to R Squared Error Loss
+def calc_predicted(b0, b1, data):
+    predicted_vals = [b1*x + b0 for x in data]
+    return predicted_vals
+
 def calcMean(results):
     results_sum = sum(results)
     return results_sum / batchSize
 
-# Related to R Squared Error Loss
-def calc_predicted(b0, b1, data):
-    predicted_vals = map(lambda x: b1*x + b0, data)
-    return predicted_vals
-
+# sum(y - mean)^2 OR sum(y hat - mean)^2
 def calcSquareDiff(data):
-    mean = calcMean(data)
-    mean_diff = map(lambda actual: actual - mean, data)
-    square_mean_diff = sum(map(lambda val: val**2, mean_diff))
-    return square_mean_diff
+    mean = calcMean(list(data))
+    mean_diff = [actual - mean for actual in data]
+    squared_mean_diff = [val**2 for val in mean_diff]
+    sum_square_mean_diff = sum(squared_mean_diff)
+    return sum_square_mean_diff
 
+# sum(y hat - mean)^2 / sum(y - mean)^2
 def calcRSquared(actual, predicted):
     predicted_R_square = calcSquareDiff(predicted)
     actual_R_square = calcSquareDiff(actual)
+    print('predicted_R_square: sum(y hat - mean)^2 ')
     print(predicted_R_square)
+    print('actual_R_square: sum(y - mean)^2')
     print(actual_R_square)
+    print('RSquare Value: ')
     return predicted_R_square / actual_R_square
 
 # Start of Regression
@@ -82,8 +87,8 @@ def calcRSquared(actual, predicted):
 # init weights
 b1 = 1.0
 b0 = -0.5
-batchSize = 10
-epochs = 50
+batchSize = 15
+epochs = 100
 
 learn = 0.2
 
@@ -115,12 +120,21 @@ for i in range(epochs):
     plt.plot (X_test, b1*X_test + b0)
     plt.pause(0.1)
 
-random_effort_vals = np.random.random_sample(batchSize)
+# Error Analysis with R Squared
+X_max = np.max(dataset_X).item()
+random_testing_vals = [random.uniform(0.0, X_max) for _ in range(batchSize)]
+predicted = calc_predicted(b0,b1,random_testing_vals)
+print('---------------------------- RSQUARED FOR MODEL PREDICTION ----------------------------------')
+print('Tested Values for ' + str(b1) + 'x + ' + str(b0) + ': ')
+print('Random X values: ')
+print(list(random_testing_vals))
 
-predicted = calc_predicted(b0,b1,random_effort_vals)
-print('R-Squared: ')
-print(calcRSquared(sample_Y, predicted))
-   
+print('Y values based on model: ')
+print(list(predicted))
+
+# Calculate R Squared
+print(calcRSquared(sample_Y, list(predicted)))   
+
 plt.subplot(212)
 plt.xlabel('Iteration')
 plt.ylabel('Error (MSE)')
