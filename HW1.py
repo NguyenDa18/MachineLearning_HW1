@@ -17,8 +17,8 @@ dip_cols = dip_df.shape[1]
 dip_df = dip_df.values
 dip_df = dip_df[np.arange(0, dip_rows), :]
 
-dip_X = dip_df[:,1]
-dip_Y = dip_df[:,2]
+dip_X = dip_df[:,2]
+dip_Y = dip_df[:,3]
 dip_X_max = np.max(dip_X)
 dip_Y_max = np.max(dip_Y)
 
@@ -81,21 +81,17 @@ def calcRSquared(actual, predicted):
 b1 = 1.0
 b0 = -0.5
 batchSize = 10
-epochs = 500
+epochs = 100
 
-learn = 0.4
+learn = 0.2
 
 plt.figure(figsize=(9,4))
-
-# Get current size
-# fig_size = plt.rcParams["figure.figsize"]
-# plt.rcParams["figure.figsize"] = [9.5,6]
 
 plt.subplot(211)
 
 plt.xlabel('Dipnet days fished')
 plt.ylabel('Dipnet days fished')
-plt.title('Dipnet fishermen')
+plt.title('Dipnet fishermen ' + ' Batch Size: ' + str(batchSize) + ', ' + str(epochs) + ' epochs')
 plt.scatter(dip_X, dip_Y)
 plt.pause(0.1);
 
@@ -117,14 +113,18 @@ for i in range(epochs):
     X_test = np.arange(0,1,0.1)
     plt.plot (X_test, b1*X_test + b0)
     plt.pause(0.1)
-    
+
+# random_effort_vals = random.sample(range(0, np.max(dip_X)),batchSize)
+
+random_effort_vals = np.random.random_sample(batchSize)
+
+predicted = calc_predicted(b0,b1,random_effort_vals)
+print('R-Squared: ')
+print(calcRSquared(sample_Y, predicted))
+   
 plt.subplot(212)
 plt.xlabel('Iteration')
 plt.ylabel('Error (MSE)')
-
-predicted = calc_predicted(b0,b1,sample_X)
-print('R-Squared: ')
-print(calcRSquared(sample_Y, predicted))
 
 # Plot for error loss
 for count, value in enumerate(batch_epoch_ERRORS):
