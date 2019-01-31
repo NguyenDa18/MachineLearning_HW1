@@ -8,22 +8,24 @@ import argparse
 ap = argparse.ArgumentParser()
 
 # Load dataframes
-dip_df = pd.read_csv("albacore_metal.csv")
+dataset_name = 'dip-har-eff.csv'
+name = dataset_name.split('.csv')[0]
+
+dataset_df = pd.read_csv("albacore_metal.csv")
 
 # Gather info
-dip_rows = dip_df.shape[0]
-dip_cols = dip_df.shape[1]
+dataset_rows = dataset_df.shape[0]
 
-dip_df = dip_df.values
-dip_df = dip_df[np.arange(0, dip_rows), :]
+dataset_df = dataset_df.values
+dataset_df = dataset_df[np.arange(0, dataset_rows), :]
 
-dip_X = dip_df[:,2]
-dip_Y = dip_df[:,3]
-dip_X_max = np.max(dip_X)
-dip_Y_max = np.max(dip_Y)
+dataset_X = dataset_df[:,2]
+dataset_Y = dataset_df[:,3]
+dataset_X_max = np.max(dataset_X)
+dataset_Y_max = np.max(dataset_Y)
 
-dip_X = np.true_divide(dip_X, dip_X_max)
-dip_Y = np.true_divide(dip_Y, dip_Y_max)
+dataset_X = np.true_divide(dataset_X, dataset_X_max)
+dataset_Y = np.true_divide(dataset_Y, dataset_Y_max)
 
 # Functions
 def calc_total_Error(row, col):
@@ -81,7 +83,7 @@ def calcRSquared(actual, predicted):
 b1 = 1.0
 b0 = -0.5
 batchSize = 10
-epochs = 100
+epochs = 50
 
 learn = 0.2
 
@@ -89,20 +91,19 @@ plt.figure(figsize=(9,4))
 
 plt.subplot(211)
 
-plt.xlabel('Dipnet days fished')
-plt.ylabel('Dipnet days fished')
-plt.title('Dipnet fishermen ' + ' Batch Size: ' + str(batchSize) + ', ' + str(epochs) + ' epochs')
-plt.scatter(dip_X, dip_Y)
+plt.xlabel('days fished')
+plt.ylabel('days fished')
+plt.title(name + ' Batch Size: ' + str(batchSize) + ', ' + str(epochs) + ' epochs')
+plt.scatter(dataset_X, dataset_Y)
 plt.pause(0.1);
 
-batchSample = takeRandomBatch(len(dip_X), batchSize)
-sample_X = [dip_X[i] for i in sorted(batchSample)]
-sample_Y = [dip_Y[i] for i in sorted(batchSample)]
-
+batchSample = takeRandomBatch(len(dataset_X), batchSize)
+sample_X = [dataset_X[i] for i in sorted(batchSample)]
+sample_Y = [dataset_Y[i] for i in sorted(batchSample)]
 
 batch_epoch_ERRORS = []
 for i in range(epochs):
-    ERROR = mse(dip_X, dip_Y, calc_total_Error)
+    ERROR = mse(dataset_X, dataset_Y, calc_total_Error)
     batch_epoch_ERRORS.append(ERROR)
     b0_temp_error = mse(sample_X, sample_Y, calc_b0_Error)
     b1_temp_error = mse(sample_X, sample_Y, calc_b1_Error)
@@ -113,8 +114,6 @@ for i in range(epochs):
     X_test = np.arange(0,1,0.1)
     plt.plot (X_test, b1*X_test + b0)
     plt.pause(0.1)
-
-# random_effort_vals = random.sample(range(0, np.max(dip_X)),batchSize)
 
 random_effort_vals = np.random.random_sample(batchSize)
 
