@@ -7,7 +7,7 @@ import argparse
 # construct argument parse
 ap = argparse.ArgumentParser()
 
-dataset_name = 'dip-har-eff.csv'
+dataset_name = 'albacore_metal.csv'
 name = dataset_name.split('.csv')[0]
 
 dataset_df = pd.read_csv(dataset_name)
@@ -18,7 +18,7 @@ dataset_rows = dataset_df.shape[0]
 dataset_df = dataset_df.values
 dataset_df = dataset_df[np.arange(0, dataset_rows), :]
 
-dataset_X = dataset_df[:,1]
+dataset_X = dataset_df[:,3]
 dataset_Y = dataset_df[:,2]
 dataset_X_max = np.max(dataset_X)
 dataset_Y_max = np.max(dataset_Y)
@@ -87,7 +87,7 @@ def calcRSquared(actual, predicted):
 # init weights
 b1 = 1.0
 b0 = -0.5
-batchSize = 15
+batchSize = 20
 epochs = 100
 
 learn = 0.2
@@ -96,8 +96,8 @@ plt.figure(figsize=(9,4))
 
 plt.subplot(211)
 
-plt.xlabel('days fished')
-plt.ylabel('days fished')
+plt.xlabel('Lead')
+plt.ylabel('Mercury')
 plt.title(name + ' Batch Size: ' + str(batchSize) + ', ' + str(epochs) + ' epochs')
 plt.scatter(dataset_X, dataset_Y)
 plt.pause(0.1);
