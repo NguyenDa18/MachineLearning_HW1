@@ -4,7 +4,7 @@ import random
 import numpy as np
 import sys
 
-dataset_name = 'dip-har-eff.csv'
+dataset_name = 'albacore_metal.csv'
 name = dataset_name.split('.csv')[0]
 
 dataset_df = pd.read_csv(dataset_name)
@@ -16,7 +16,7 @@ dataset_df = dataset_df.values
 dataset_df = dataset_df[np.arange(0, dataset_rows), :]
 
 dataset_X = dataset_df[:,1]
-dataset_Y = dataset_df[:,2]
+dataset_Y = dataset_df[:,3]
 dataset_X_max = np.max(dataset_X)
 dataset_Y_max = np.max(dataset_Y)
 
@@ -93,8 +93,8 @@ plt.figure(figsize=(9,4))
 
 plt.subplot(211)
 
-plt.xlabel('Days Fished')
-plt.ylabel('Fish Harvest')
+plt.xlabel('Cadmium')
+plt.ylabel('Lead')
 plt.title(name + ' Batch Size: ' + str(batchSize) + ', ' + str(epochs) + ' epochs')
 plt.scatter(dataset_X, dataset_Y)
 plt.pause(0.1);
